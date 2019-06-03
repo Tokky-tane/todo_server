@@ -1,3 +1,4 @@
+import datetime
 from database import get_db
 from psycopg2.extras import RealDictCursor
 import json
@@ -7,9 +8,11 @@ def get_all_tasks():
     with get_db() as db:
         with db.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
-                        SELECT id, user_id, title FROM tasks
+                        SELECT id, user_id, title, deadline FROM tasks
                         """)
-            return json.dumps(cur.fetchall(), indent=2)
+            tasks = format_tasks(cur.fetchall())
+
+            return json.dumps(tasks, indent=2)
 
 
 def delete_all_tasks():
@@ -25,30 +28,33 @@ def get_user_tasks(user_id):
     with get_db() as db:
         with db.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
-                        SELECT id, user_id, title FROM tasks 
+                        SELECT id, user_id, title, deadline FROM tasks
                         WHERE user_id = %s
                         """, (user_id,))
-            return json.dumps(cur.fetchall(), indent=2)
+
+            tasks = format_tasks(cur.fetchall())
+
+            return json.dumps(tasks, indent=2)
 
 
 def delete_user_tasks(user_id):
     with get_db() as db:
         with db.cursor() as cur:
             cur.execute("""
-                        DELETE FROM tasks 
+                        DELETE FROM tasks
                         WHERE user_id = %s
                         """, (user_id,))
             return
 
 
-def create_task(user_id, title):
+def create_task(user_id, title, deadline):
     with get_db() as db:
         with db.cursor() as cur:
             cur.execute("""
-                        INSERT INTO tasks (user_id, title)
-                        VALUES (%s, %s)
+                        INSERT INTO tasks (user_id, title, deadline)
+                        VALUES (%s, %s,%s)
                         RETURNING id
-                        """, (user_id,title))
+                        """, (user_id, title, deadline))
             id = cur.fetchone()[0]
             return id
 
@@ -57,10 +63,13 @@ def get_task(id):
     with get_db() as db:
         with db.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
-                        SELECT id, user_id, title FROM tasks 
+                        SELECT id, user_id, title, deadline FROM tasks
                         WHERE id = %s
                         """, (id,))
-            return json.dumps(cur.fetchone(), indent=2)
+
+            task = convert_timestamp(cur.fetchone())
+
+            return json.dumps(task, indent=2)
 
 
 def update_task(id, title):
@@ -82,3 +91,16 @@ def delete_task(id):
                         WHERE id = %s
                         """, (id,))
             return
+
+
+def format_tasks(tasks):
+    for task in tasks:
+        convert_timestamp(task)
+    return tasks
+
+
+def convert_timestamp(task):
+    if task['deadline'] is not None:
+        task['deadline'] = task['deadline'].isoformat()
+
+    return task

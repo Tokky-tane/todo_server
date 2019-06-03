@@ -1,3 +1,5 @@
+import datetime
+import dateutil.parser
 from flask import Flask, request, Response
 from flask_api import status
 from database import close_db
@@ -65,8 +67,12 @@ def route_users_tasks(user_id):
         return tasks
     elif request.method == 'POST':
         title = request.json['title']
+        deadline = request.json['deadline']
 
-        id = create_task(user_id, title)
+        if(deadline is not None):
+            deadline = dateutil.parser.parse(deadline)
+
+        id = create_task(user_id, title, deadline)
         location = '/users/{}/tasks/{}'.format(user_id, id)
         response = create_post_response(location)
 
