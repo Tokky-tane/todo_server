@@ -8,7 +8,7 @@ def get_all_tasks():
     with get_db() as db:
         with db.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
-                        SELECT id, user_id, title, deadline FROM tasks
+                        SELECT id, user_id, title, due_date FROM tasks
                         """)
             tasks = format_tasks(cur.fetchall())
 
@@ -28,7 +28,7 @@ def get_user_tasks(user_id):
     with get_db() as db:
         with db.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
-                        SELECT id, user_id, title, deadline FROM tasks
+                        SELECT id, user_id, title, due_date FROM tasks
                         WHERE user_id = %s
                         """, (user_id,))
 
@@ -47,14 +47,14 @@ def delete_user_tasks(user_id):
             return
 
 
-def create_task(user_id, title, deadline):
+def create_task(user_id, title, due_date):
     with get_db() as db:
         with db.cursor() as cur:
             cur.execute("""
-                        INSERT INTO tasks (user_id, title, deadline)
+                        INSERT INTO tasks (user_id, title, due_date)
                         VALUES (%s, %s,%s)
                         RETURNING id
-                        """, (user_id, title, deadline))
+                        """, (user_id, title, due_date))
             id = cur.fetchone()[0]
             return id
 
@@ -63,7 +63,7 @@ def get_task(id):
     with get_db() as db:
         with db.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
-                        SELECT id, user_id, title, deadline FROM tasks
+                        SELECT id, user_id, title, due_date FROM tasks
                         WHERE id = %s
                         """, (id,))
 
@@ -100,7 +100,7 @@ def format_tasks(tasks):
 
 
 def convert_timestamp(task):
-    if task['deadline'] is not None:
-        task['deadline'] = task['deadline'].isoformat()
+    if task['due_date'] is not None:
+        task['due_date'] = task['due_date'].isoformat(timespec='seconds')
 
     return task

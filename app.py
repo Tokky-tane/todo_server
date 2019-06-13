@@ -67,12 +67,12 @@ def route_users_tasks(user_id):
         return tasks
     elif request.method == 'POST':
         title = request.json['title']
-        deadline = request.json['deadline']
+        due_date = request.json['due_date']
 
-        if(deadline is not None):
-            deadline = dateutil.parser.parse(deadline)
+        if(due_date is not None):
+            due_date = dateutil.parser.parse(due_date)
 
-        id = create_task(user_id, title, deadline)
+        id = create_task(user_id, title, due_date)
         location = '/users/{}/tasks/{}'.format(user_id, id)
         response = create_post_response(location)
 
@@ -95,6 +95,7 @@ def route_task(user_id, task_id):
         return '', status.HTTP_200_OK
     else:
         delete_task(task_id)
+        return '',status.HTTP_200_OK
 
 
 def create_post_response(location):
