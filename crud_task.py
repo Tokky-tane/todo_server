@@ -72,14 +72,15 @@ def get_task(id):
             return json.dumps(task, indent=2)
 
 
-def update_task(id, title):
+def update_task(id, title, due_date):
     with get_db() as db:
         with db.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
                         UPDATE tasks
-                        SET title = %s
+                        SET title = %s,
+                            due_date = %s
                         WHERE id = %s
-                        """, (title, id))
+                        """, (title, due_date, id))
             return
 
 

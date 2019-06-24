@@ -89,13 +89,14 @@ def route_task(user_id, task_id):
         return task
     elif request.method == 'PUT':
         title = request.json['title']
+        due_date = request.json['due_date']
 
-        update_task(task_id, title)
+        update_task(task_id, title, due_date)
 
         return '', status.HTTP_200_OK
     else:
         delete_task(task_id)
-        return '',status.HTTP_200_OK
+        return '', status.HTTP_200_OK
 
 
 def create_post_response(location):
