@@ -210,3 +210,7 @@ pip-selfcheck.json
 .history
 
 # End of https://www.gitignore.io/api/venv,flask,python,visualstudiocode
+
+#secret keys file
+
+secret.py

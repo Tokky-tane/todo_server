@@ -4,7 +4,7 @@ from flask import Flask, request, g
 
 
 def get_db():
-    db_password = os.getenv('DB_PASSWORD')
+    db_password = os.environ['DB_PASSWORD']
     if 'db' not in g:
         g.db = psycopg2.connect(dbname='sample',
                                 user='postgres',

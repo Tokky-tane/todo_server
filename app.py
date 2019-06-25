@@ -5,10 +5,11 @@ from flask_api import status
 from database import close_db
 from crud_task import get_all_tasks, delete_all_tasks, create_task, delete_user_tasks, get_user_tasks, delete_task, get_task, update_task
 from crud_user import get_all_users, delete_all_users, create_user, get_user, update_user, delete_user
+import secret
 
 app = Flask(__name__)
 app.teardown_appcontext(close_db)
-
+secret.set_secrets()
 
 @app.route('/users', methods=['GET', 'POST', 'DELETE'])
 def route_users():
