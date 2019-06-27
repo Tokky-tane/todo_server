@@ -6,10 +6,16 @@ from database import close_db
 from crud_task import get_all_tasks, delete_all_tasks, create_task, delete_user_tasks, get_user_tasks, delete_task, get_task, update_task
 from crud_user import get_all_users, delete_all_users, create_user, get_user, update_user, delete_user
 import secret
+import firebase_admin
+from firebase_admin import credentials, auth
 
 app = Flask(__name__)
 app.teardown_appcontext(close_db)
 secret.set_secrets()
+cred = credentials.Certificate(
+    "todoapp-783df-firebase-adminsdk-u866j-935ea52918.json")
+firebase_admin.initialize_app(cred)
+
 
 @app.route('/users', methods=['GET', 'POST', 'DELETE'])
 def route_users():
@@ -33,6 +39,7 @@ def route_users():
 
 @app.route('/users/<int:user_id>', methods=['GET', 'PUT', 'DELETE'])
 def route_user(user_id):
+
     if request.method == 'GET':
         user = get_user(user_id)
         return user
@@ -63,6 +70,14 @@ def route_tasks():
 
 @app.route('/users/<int:user_id>/tasks', methods=['GET', 'POST', 'DELETE'])
 def route_users_tasks(user_id):
+    token = request.headers.get('Authorization')
+    try:
+        auth.verify_id_token(token)
+    except ValueError:
+        return '', status.HTTP_401_UNAUTHORIZED
+    except auth.AuthError:
+        return '', status.HTTP_401_UNAUTHORIZED
+
     if request.method == 'GET':
         tasks = get_user_tasks(user_id)
         return tasks
