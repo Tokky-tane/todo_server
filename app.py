@@ -100,6 +100,15 @@ def route_users_tasks(user_id):
 
 @app.route('/users/<int:user_id>/tasks/<int:task_id>', methods=['GET', 'PUT', 'DELETE'])
 def route_task(user_id, task_id):
+    
+    token = request.headers.get('Authorization')
+    try:
+        auth.verify_id_token(token)
+    except ValueError:
+        return '', status.HTTP_401_UNAUTHORIZED
+    except auth.AuthError:
+        return '', status.HTTP_401_UNAUTHORIZED
+
     if request.method == 'GET':
         task = get_task(task_id)
         return task
