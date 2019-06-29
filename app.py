@@ -5,7 +5,6 @@ from flask import Flask, request, Response
 from flask_api import status
 from database import close_db
 from crud_task import get_all_tasks, delete_all_tasks, create_task, delete_user_tasks, get_user_tasks, delete_task, get_task, update_task
-from crud_user import get_all_users, delete_all_users, create_user, get_user, update_user, delete_user
 import firebase_admin
 from firebase_admin import credentials, auth
 
@@ -25,58 +24,6 @@ cred = credentials.Certificate({
     "client_x509_cert_url": os.environ['FIREBASE_CLIENT_CERT_URL']
 })
 firebase_admin.initialize_app(cred)
-
-
-@app.route('/users', methods=['GET', 'POST', 'DELETE'])
-def route_users():
-    if request.method == 'GET':
-        users = get_all_users()
-        return users
-
-    elif request.method == 'POST':
-        name = request.json['name']
-        password = request.json['password']
-        id = create_user(name, password)
-
-        location = '/users/{}'.format(id)
-        response = create_post_response(location)
-        return response
-
-    else:
-        delete_all_users()
-        return '', status.HTTP_204_NO_CONTENT
-
-
-@app.route('/users/<int:user_id>', methods=['GET', 'PUT', 'DELETE'])
-def route_user(user_id):
-
-    if request.method == 'GET':
-        user = get_user(user_id)
-        return user
-
-    elif request.method == 'PUT':
-        name = request.json['name']
-        password = request.json['password']
-
-        update_user(user_id, name, password)
-
-        return '', status.HTTP_200_OK
-
-    else:
-        delete_user(user_id)
-        return '', status.HTTP_200_OK
-
-
-@app.route('/tasks', methods=['GET', 'DELETE'])
-def route_tasks():
-    if request.method == 'GET':
-        tasks = get_all_tasks()
-        return tasks
-
-    else:
-        delete_all_tasks()
-        return '', status.HTTP_204_NO_CONTENT
-
 
 @app.route('/users/<string:user_id>/tasks', methods=['GET', 'POST', 'DELETE'])
 def route_users_tasks(user_id):
