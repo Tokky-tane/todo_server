@@ -1,3 +1,4 @@
+import os
 import datetime
 import dateutil.parser
 from flask import Flask, request, Response
@@ -5,15 +6,24 @@ from flask_api import status
 from database import close_db
 from crud_task import get_all_tasks, delete_all_tasks, create_task, delete_user_tasks, get_user_tasks, delete_task, get_task, update_task
 from crud_user import get_all_users, delete_all_users, create_user, get_user, update_user, delete_user
-import secret
 import firebase_admin
 from firebase_admin import credentials, auth
 
 app = Flask(__name__)
 app.teardown_appcontext(close_db)
-secret.set_secrets()
-cred = credentials.Certificate(
-    "todoapp-783df-firebase-adminsdk-u866j-935ea52918.json")
+
+cred = credentials.Certificate({
+    "type": os.environ['FIREBASE_TYPE'],
+    "project_id": os.environ['FIREBASE_PROJECT_ID'],
+    "private_key_id": os.environ['FIREBASE_PRIVATE_KEY_ID'],
+    "private_key": os.environ['FIREBASE_PRIVATE_KEY'].replace(r'\\n',r'\n'),
+    "client_email": os.environ['FIREBASE_CLIENT_EMAIL'],
+    "client_id": os.environ['FIREBASE_CLIENT_ID'],
+    "auth_uri": os.environ['FIREBASE_AUTH_URI'],
+    "token_uri": os.environ['FIREBASE_TOKEN_URI'],
+    "auth_provider_x509_cert_url": os.environ['FIREBASE_AUTH_PROVIDER_CERT_URL'],
+    "client_x509_cert_url": os.environ['FIREBASE_CLIENT_CERT_URL']
+})
 firebase_admin.initialize_app(cred)
 
 
@@ -72,9 +82,9 @@ def route_tasks():
 def route_users_tasks(user_id):
     token = request.headers.get('Authorization')
     try:
-        decoded_token=auth.verify_id_token(token)
-        if not decoded_token['uid']==user_id:
-            return '',status.HTTP_401_UNAUTHORIZED
+        decoded_token = auth.verify_id_token(token)
+        if not decoded_token['uid'] == user_id:
+            return '', status.HTTP_401_UNAUTHORIZED
     except ValueError:
         return '', status.HTTP_401_UNAUTHORIZED
     except auth.AuthError:
@@ -105,10 +115,10 @@ def route_task(user_id, task_id):
     token = request.headers.get('Authorization')
     try:
         auth.verify_id_token(token)
-        decoded_token=auth.verify_id_token(token)
-        if not decoded_token['uid']==user_id:
-            return '',status.HTTP_401_UNAUTHORIZED
-            
+        decoded_token = auth.verify_id_token(token)
+        if not decoded_token['uid'] == user_id:
+            return '', status.HTTP_401_UNAUTHORIZED
+
     except ValueError:
         return '', status.HTTP_401_UNAUTHORIZED
     except auth.AuthError:
