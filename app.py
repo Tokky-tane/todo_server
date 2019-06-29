@@ -68,18 +68,20 @@ def route_tasks():
         return '', status.HTTP_204_NO_CONTENT
 
 
-@app.route('/users/<int:user_id>/tasks', methods=['GET', 'POST', 'DELETE'])
+@app.route('/users/<string:user_id>/tasks', methods=['GET', 'POST', 'DELETE'])
 def route_users_tasks(user_id):
     token = request.headers.get('Authorization')
     try:
-        auth.verify_id_token(token)
+        decoded_token=auth.verify_id_token(token)
+        if not decoded_token['uid']==user_id:
+            return '',status.HTTP_401_UNAUTHORIZED
     except ValueError:
         return '', status.HTTP_401_UNAUTHORIZED
     except auth.AuthError:
         return '', status.HTTP_401_UNAUTHORIZED
 
     if request.method == 'GET':
-        tasks = get_user_tasks(user_id)
+        tasks = get_user_tasks(decoded_token['uid'])
         return tasks
     elif request.method == 'POST':
         title = request.json['title']
@@ -89,21 +91,24 @@ def route_users_tasks(user_id):
             due_date = dateutil.parser.parse(due_date)
 
         id = create_task(user_id, title, due_date)
-        location = '/users/{}/tasks/{}'.format(user_id, id)
+        location = '/users/{}/tasks/{}'.format(decoded_token['uid'], id)
         response = create_post_response(location)
 
         return response
     else:
-        delete_user_tasks(user_id)
+        delete_user_tasks(decoded_token['uid'])
         return '', status.HTTP_200_OK
 
 
-@app.route('/users/<int:user_id>/tasks/<int:task_id>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/users/<string:user_id>/tasks/<int:task_id>', methods=['GET', 'PUT', 'DELETE'])
 def route_task(user_id, task_id):
-    
     token = request.headers.get('Authorization')
     try:
         auth.verify_id_token(token)
+        decoded_token=auth.verify_id_token(token)
+        if not decoded_token['uid']==user_id:
+            return '',status.HTTP_401_UNAUTHORIZED
+            
     except ValueError:
         return '', status.HTTP_401_UNAUTHORIZED
     except auth.AuthError:
@@ -121,7 +126,7 @@ def route_task(user_id, task_id):
         return '', status.HTTP_200_OK
     else:
         delete_task(task_id)
-        return '', status.HTTP_200_OK
+        return '', status.HTTP_204_NO_CONTENT
 
 
 def create_post_response(location):
