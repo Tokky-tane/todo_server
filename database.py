@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 def get_db():
     if 'db' not in g:
-        url = urlparse(os.environ['DB_URL'])
+        url = urlparse(os.environ['DATABASE_URL'])
         username = url.username
         password = url.password
         database = url.path[1:]
