@@ -7,9 +7,11 @@ from database import close_db
 from crud_task import get_all_tasks, delete_all_tasks, create_task, delete_user_tasks, get_user_tasks, delete_task, get_task, update_task
 import firebase_admin
 from firebase_admin import credentials, auth
+from dotenv import find_dotenv, load_dotenv
 
 app = Flask(__name__)
 app.teardown_appcontext(close_db)
+load_dotenv(find_dotenv())
 
 cred = credentials.Certificate({
     "type": os.environ['FIREBASE_TYPE'],
