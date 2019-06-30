@@ -13,6 +13,7 @@ app = Flask(__name__)
 app.teardown_appcontext(close_db)
 load_dotenv(find_dotenv())
 
+print(os.environ['FIREBASE_PRIVATE_KEY'])
 cred = credentials.Certificate({
     "type": os.environ['FIREBASE_TYPE'],
     "project_id": os.environ['FIREBASE_PROJECT_ID'],
