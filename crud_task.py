@@ -94,6 +94,14 @@ def delete_task(id):
             return
 
 
+def exist_task(id):
+    with get_db() as db:
+        with db.cursor() as cur:
+            cur.execute("SELECT * from tasks WHERE id = %s", (id,))
+
+            return cur.fetchone() is not None
+
+
 def format_tasks(tasks):
     for task in tasks:
         convert_timestamp(task)

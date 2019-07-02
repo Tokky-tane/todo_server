@@ -4,7 +4,7 @@ import dateutil.parser
 from flask import Flask, request, Response
 from flask_api import status
 from database import close_db
-from crud_task import get_all_tasks, delete_all_tasks, create_task, delete_user_tasks, get_user_tasks, delete_task, get_task, update_task
+from crud_task import get_all_tasks, delete_all_tasks, create_task, delete_user_tasks, get_user_tasks, delete_task, get_task, update_task, exist_task
 import firebase_admin
 from firebase_admin import credentials, auth
 from dotenv import find_dotenv, load_dotenv
@@ -79,6 +79,9 @@ def route_task(user_id, task_id):
         return '', status.HTTP_401_UNAUTHORIZED
     except auth.AuthError:
         return '', status.HTTP_401_UNAUTHORIZED
+
+    if exist_task(task_id) == False:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         task = get_task(task_id)
