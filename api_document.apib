@@ -8,6 +8,11 @@ todoを登録、追加、更新するためのAPIです
  
 ## Tasks [/users/{user_id}/tasks]
 
++ id
++ user_id
++ title
++ due_date - ISO8601形式で表されるタスクの期限日
+
 + Parameters
     + user_id (string) - firebaseのuid
 
@@ -59,10 +64,6 @@ todoを登録、追加、更新するためのAPIです
                 "due_date": "2019-06-04T18:30:40"
             }
 
-+ Parameters
-
-    + user_id (string) - firebaseのuid
-
 + Response 200
 
     + Headers
@@ -71,13 +72,19 @@ todoを登録、追加、更新するためのAPIです
 
 ### タスクの全件削除[DELETE]
 
++ Response 204
+
+## Task [/users/{user_id}/tasks/{task_id}]
+
++ id
++ user_id
++ title
++ due_date - ISO8601形式で表されるタスクの期限日
+
 + Parameters
 
     + user_id (string) - firebaseのuid
-
-+ Response 204
-
-## 個別のタスク [/users/{user_id}/tasks/{task_id}]
+    + task_id (number) - taskのid
 
 ### タスクの取得 [GET]
 
@@ -86,10 +93,6 @@ todoを登録、追加、更新するためのAPIです
     + Headers
 
             authorization: {token}
-+ Parameters
-
-    + user_id (string) - firebaseのuid
-    + task_id (integer) - taskのid
 
 + Response 200 (application/json)
 
@@ -114,10 +117,7 @@ todoを登録、追加、更新するためのAPIです
                 "title": "your_task_title",
                 "due_date": "2019-06-04T18:30:40"
             }
-    + Parameters
-        + user_id (string) - firebaseのuid
-        + task_id (integer) - taskのid
-
+    
 + Response 200
 
 ### タスクの削除[DELETE]
@@ -127,10 +127,5 @@ todoを登録、追加、更新するためのAPIです
     + Headers
 
             authorization: {token}
-
-+ Parameters
-
-    + user_id (string) - firebaseのuid
-    + task_id (integer) - taskのid
     
 + Response 204
