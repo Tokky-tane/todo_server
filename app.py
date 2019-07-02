@@ -56,13 +56,14 @@ def route_users_tasks(user_id):
 
         id = create_task(user_id, title, due_date)
         location = '/users/{}/tasks/{}'.format(user_id, id)
-        response = create_post_response(location)
+        response = Response(status=status.HTTP_201_CREATED)
+        response.headers['location'] = location
 
         return response
 
     else:
         delete_user_tasks(user_id)
-        return '', status.HTTP_200_OK
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @app.route('/users/<string:user_id>/tasks/<int:task_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -97,9 +98,3 @@ def route_task(user_id, task_id):
     else:
         delete_task(task_id)
         return '', status.HTTP_204_NO_CONTENT
-
-
-def create_post_response(location):
-    res = Response('')
-    res.headers['location'] = location
-    return res
