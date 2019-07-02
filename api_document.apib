@@ -1,16 +1,33 @@
 FORMAT: 1A
  
-# Group user's tasks
+# To-do
+
+todoを登録、追加、更新するためのAPIです
+
+# Group Task
  
-## ユーザーのタスク [/users/{user_id}/tasks]
+## Tasks [/users/{user_id}/tasks]
+
++ id
++ user_id
++ title
++ due_date - ISO8601形式で表されるタスクの期限日
+
++ Parameters
+    + user_id (string) - firebase Authentication の uid
 
 ### タスクの全件取得 [GET]
+
 + Request
+
     + Headers
-        authorization: {token}
-+ Parameters
-    + user_id (string) - firebaseのuid
-+ Response 200 (text/html)
+
+            authorization: {token}
+
++ Response 200 (application/json)
+
+    + Body
+
             [
                 {
                     "id": 1,
@@ -33,64 +50,82 @@ FORMAT: 1A
             ]
 
 ### タスクの登録 [POST]
+
 + Request
     + Headers
-        authorization: {token}
-        content-type: application/json
+
+            authorization: {token}
+            content-type: application/json
+
     + Body
-        {
-            "title": "your_task_title",
-            "due_date": "2019-06-04T18:30:40"
-        }
-+ Parameters
-    + user_id (string) - firebaseのuid
+
+            {
+                "title": "your_task_title",
+                "due_date": "2019-06-04T18:30:40"
+            }
+
 + Response 200
-    + Body
+
     + Headers
-        location: /users/{user_id}/tasks/{new_task_id}
+
+            location: /users/{user_id}/tasks/{new_task_id}
 
 ### タスクの全件削除[DELETE]
 
-+ Parameters
-    + user_id (string) - firebaseのuid
 + Response 204
 
-## 個別のタスク [/users/{user_id}/tasks/{task_id}]
-### タスクの取得 [GET]
-+ Request
-    + Headers
-        authorization: {token}
-+ Parameters
-    + user_id (string) - firebaseのuid
-    + task_id (integer) - taskのid
-+ Response 200 (text/html)
-    {
-        "id": 1,
-        "user_id": "user_id",
-        "title": "task_title1",
-        "due_date": "2019-06-04T18:30:40"
-    }
+## Task [/users/{user_id}/tasks/{task_id}]
 
-### タスクの更新 [PUT]
++ id
++ user_id
++ title
++ due_date - ISO8601形式で表されるタスクの期限日
+
++ Parameters
+
+    + user_id (string) - firebase Authentication の uid
+    + task_id (number) - taskのid
+
+### タスクの取得 [GET]
+
 + Request
+
     + Headers
-        authorization: {token}
-        content-type: application/json
-    + Body
+
+            authorization: {token}
+
++ Response 200 (application/json)
+
         {
-            "title": "your_task_title",
+            "id": 1,
+            "user_id": "user_id",
+            "title": "task_title1",
             "due_date": "2019-06-04T18:30:40"
         }
-+ Parameters
-    + user_id (string) - firebaseのuid
-    + task_id (integer) - taskのid
+
+### タスクの更新 [PUT]
+
++ Request
+
+    + Headers
+
+            authorization: {token}
+            content-type: application/json
+    + Body
+
+            {
+                "title": "your_task_title",
+                "due_date": "2019-06-04T18:30:40"
+            }
+    
 + Response 200
 
 ### タスクの削除[DELETE]
+
 + Request
+
     + Headers
-        authorization: {token}
-+ Parameters
-    + user_id (string) - firebaseのuid
-    + task_id (integer) - taskのid
+
+            authorization: {token}
+    
 + Response 204
