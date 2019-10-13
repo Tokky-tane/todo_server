@@ -32,9 +32,7 @@ firebase_admin.initialize_app(cred)
 def route_users_tasks(user_id):
     token = request.headers.get('Authorization')
     try:
-        decoded_token = auth.verify_id_token(token)
-        if not decoded_token['uid'] == user_id:
-            return '', status.HTTP_401_UNAUTHORIZED
+        auth.verify_id_token(token)
     except ValueError:
         return '', status.HTTP_401_UNAUTHORIZED
     except auth.AuthError:
@@ -71,10 +69,6 @@ def route_task(user_id, task_id):
     token = request.headers.get('Authorization')
     try:
         auth.verify_id_token(token)
-        decoded_token = auth.verify_id_token(token)
-        if not decoded_token['uid'] == user_id:
-            return '', status.HTTP_401_UNAUTHORIZED
-
     except ValueError:
         return '', status.HTTP_401_UNAUTHORIZED
     except auth.AuthError:
