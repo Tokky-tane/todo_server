@@ -28,11 +28,11 @@ cred = credentials.Certificate({
 firebase_admin.initialize_app(cred)
 
 
-@app.route('/users/<string:user_id>/tasks', methods=['GET', 'POST', 'DELETE'])
-def route_users_tasks(user_id):
+@app.route('/users/me/tasks', methods=['GET', 'POST', 'DELETE'])
+def route_users_tasks():
     token = request.headers.get('Authorization')
     try:
-        auth.verify_id_token(token)
+        user_id = auth.verify_id_token(token)['uid']
     except ValueError:
         return '', status.HTTP_401_UNAUTHORIZED
     except auth.AuthError:
@@ -53,7 +53,7 @@ def route_users_tasks(user_id):
             due_date = dateutil.parser.parse(due_date)
 
         id = create_task(user_id, title, due_date)
-        location = '/users/{}/tasks/{}'.format(user_id, id)
+        location = '/users/me/tasks/{}'.format(id)
         response = Response(status=status.HTTP_201_CREATED)
         response.headers['location'] = location
 
@@ -64,8 +64,8 @@ def route_users_tasks(user_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@app.route('/users/<string:user_id>/tasks/<int:task_id>', methods=['GET', 'PUT', 'DELETE'])
-def route_task(user_id, task_id):
+@app.route('/users/me/tasks/<int:task_id>', methods=['GET', 'PUT', 'DELETE'])
+def route_task(task_id):
     token = request.headers.get('Authorization')
     try:
         auth.verify_id_token(token)
