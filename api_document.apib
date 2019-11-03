@@ -6,15 +6,11 @@ todoを登録、追加、更新するためのAPIです
 
 # Group Task
  
-## Tasks [/users/{user_id}/tasks]
+## Tasks [/users/me/tasks]
 
 + id
-+ user_id
 + title
 + due_date - ISO8601形式で表されるタスクの期限日
-
-+ Parameters
-    + user_id (string) - firebase Authentication の uid
 
 ### タスクの全件取得 [GET]
 
@@ -68,22 +64,19 @@ todoを登録、追加、更新するためのAPIです
 
     + Headers
 
-            location: /users/{user_id}/tasks/{new_task_id}
+            location: /users/me/tasks/{new_task_id}
 
 ### タスクの全件削除[DELETE]
 
 + Response 204
 
-## Task [/users/{user_id}/tasks/{task_id}]
+## Task [/users/me/tasks/{task_id}]
 
 + id
-+ user_id
 + title
 + due_date - ISO8601形式で表されるタスクの期限日
 
 + Parameters
-
-    + user_id (string) - firebase Authentication の uid
     + task_id (number) - taskのid
 
 ### タスクの取得 [GET]
