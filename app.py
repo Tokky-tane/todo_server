@@ -39,7 +39,13 @@ def route_users_tasks():
         return '', status.HTTP_401_UNAUTHORIZED
 
     if request.method == 'GET':
-        tasks = get_user_tasks(user_id)
+        updated_at_min = request.args.get('updated_at_min')
+
+        datetime_updated_at_min = None
+        if(updated_at_min is not None):
+            datetime_updated_at_min = dateutil.parser.isoparse(updated_at_min)
+
+        tasks = get_user_tasks(user_id, datetime_updated_at_min)
 
         response = Response(mimetype='applicaiotn/json')
         response.set_data(tasks)
@@ -50,7 +56,7 @@ def route_users_tasks():
         due_date = request.json['due_date']
 
         if(due_date is not None):
-            due_date = dateutil.parser.parse(due_date)
+            due_date = dateutil.parser.isoparse(due_date)
 
         id = create_task(user_id, title, due_date)
         location = '/users/me/tasks/{}'.format(id)
