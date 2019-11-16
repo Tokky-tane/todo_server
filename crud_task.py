@@ -24,13 +24,15 @@ def delete_all_tasks():
             return
 
 
-def get_user_tasks(user_id):
+def get_user_tasks(user_id, updated_at_min=None):
+    if updated_at_min is None:
+        updated_at_min = datetime.datetime.min
     with get_db() as db:
         with db.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
                         SELECT id, user_id, title, due_date FROM tasks
-                        WHERE user_id = %s
-                        """, (user_id,))
+                        WHERE user_id = %s AND updated_at >= %s
+                        """, (user_id, updated_at_min))
 
             tasks = format_tasks(cur.fetchall())
 
